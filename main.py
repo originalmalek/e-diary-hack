@@ -59,7 +59,7 @@ if __name__ == "__main__":
 			remove_chastisements()
 			print('Замечания удалены')
 
-		if args.action == 3 and args.subject is not True:
+		if args.action == 3 and args.subject:
 			with open('praises.txt', 'r') as f:
 				praises = f.read().splitlines()
 			create_commendation(args.subject, args.year, args.letter)
