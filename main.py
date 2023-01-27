@@ -17,7 +17,7 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 def create_commendation(subject, year_of_study, group_letter):
 	last_lesson = Lesson.objects.filter(year_of_study=year_of_study, group_letter=group_letter,
-	                                    subject__title=subject)[0]
+	                                    subject__title=subject).order_by('-date')[0]
 
 	Commendation.objects.create(subject=last_lesson.subject, schoolkid=schoolkid, teacher=last_lesson.teacher,
 	                            text=random.choice(praises), created=last_lesson.date)
