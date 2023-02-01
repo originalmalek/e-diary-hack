@@ -12,22 +12,23 @@ from datacenter.models import Mark
 from datacenter.models import Lesson
 from datacenter.models import Commendation
 
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-
 
 def create_commendation(subject, year_of_study, group_letter):
-	last_lesson = Lesson.objects.filter(year_of_study=year_of_study, group_letter=group_letter,
-	                                    subject__title=subject).order_by('-date')[0]
+	last_lesson = Lesson.objects.filter(
+										year_of_study=year_of_study,
+										group_letter=group_letter,
+	                                    subject__title=subject
+	                                    ).order_by('-date').first()
 
-	Commendation.objects.create(subject=last_lesson.subject, schoolkid=schoolkid, teacher=last_lesson.teacher,
-	                            text=random.choice(praises), created=last_lesson.date)
+	Commendation.objects.create(subject=last_lesson.subject,
+	                            schoolkid=schoolkid,
+	                            teacher=last_lesson.teacher,
+	                            text=random.choice(praises),
+	                            created=last_lesson.date)
 
 
 def fix_marks():
-	bad_marks = Mark.objects.filter(schoolkid=schoolkid, points__in=[2, 3])
-	for bad_mark in bad_marks:
-		bad_mark.points = 4
-		bad_mark.save()
+	Mark.objects.filter(schoolkid=schoolkid, points__in=[2, 3]).update(points=4)
 
 
 def remove_chastisements():
@@ -42,9 +43,10 @@ if __name__ == "__main__":
 	parser.add_argument('-y', '--year', help='Номер класса', type=str)
 	parser.add_argument('-l', '--letter', help='Буква класса', type=str)
 	parser.add_argument('-a', '--action', help='''Выберите действие
-	                                                    1. Заменить плохие оценки ученика
-	                                                    2. Удалить все замечания
-	                                                    3. Добавить ученику похвалу''', type=int)
+	                                    1. Заменить плохие оценки ученика
+	                                    2. Удалить все замечания
+	                                    3. Добавить ученику похвалу''', type=int)
+
 	parser.add_argument('-s', '--subject', help='Предмет', type=str)
 	args = parser.parse_args()
 
@@ -65,8 +67,9 @@ if __name__ == "__main__":
 			create_commendation(args.subject, args.year, args.letter)
 			print('Похвала добавлена')
 
-	except ObjectDoesNotExist:
+	except Schoolkid.DoesNotExist:
 		print('Такого ученика нет в списке учеников')
 
-	except MultipleObjectsReturned:
-		print('Несколько учеников с такими параметрами. Пожалуйста уточните имя ученика')
+	except Schoolkid.MultipleObjectsReturned:
+		print('''Несколько учеников с такими параметрами.
+				Пожалуйста уточните имя ученика''')
