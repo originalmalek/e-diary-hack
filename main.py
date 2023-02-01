@@ -13,11 +13,8 @@ from datacenter.models import Lesson
 from datacenter.models import Commendation
 
 
-def create_commendation(subject, year_of_study, group_letter):
-	last_lesson = Lesson.objects.filter(
-										year_of_study=year_of_study,
-										group_letter=group_letter,
-	                                    subject__title=subject
+def create_commendation(subject):
+	last_lesson = Lesson.objects.filter(subject__title=subject
 	                                    ).order_by('-date').first()
 
 	Commendation.objects.create(subject=last_lesson.subject,
@@ -62,7 +59,7 @@ if __name__ == "__main__":
 		if args.action == 3 and args.subject:
 			with open('praises.txt', 'r') as f:
 				praises = f.read().splitlines()
-			create_commendation(args.subject, args.year, args.letter)
+			create_commendation(args.subject)
 			print('Похвала добавлена')
 
 	except Schoolkid.DoesNotExist:
