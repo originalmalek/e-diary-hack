@@ -40,8 +40,6 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description='Программа для взлома дневника')
 
 	parser.add_argument('-n', '--name', help='Имя ученика', type=str)
-	parser.add_argument('-y', '--year', help='Номер класса', type=str)
-	parser.add_argument('-l', '--letter', help='Буква класса', type=str)
 	parser.add_argument('-a', '--action', help='''Выберите действие
 	                                    1. Заменить плохие оценки ученика
 	                                    2. Удалить все замечания
