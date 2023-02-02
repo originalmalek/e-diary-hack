@@ -13,7 +13,7 @@ from datacenter.models import Lesson
 from datacenter.models import Commendation
 
 
-def create_commendation(schoolkid, subject):
+def create_commendation(schoolkid, subject, praises):
 	last_lesson = Lesson.objects.filter(subject__title=subject
 	                                    ).order_by('-date').first()
 
@@ -24,11 +24,11 @@ def create_commendation(schoolkid, subject):
 	                            created=last_lesson.date)
 
 
-def fix_marks():
+def fix_marks(schoolkid):
 	Mark.objects.filter(schoolkid=schoolkid, points__in=[2, 3]).update(points=4)
 
 
-def remove_chastisements():
+def remove_chastisements(schoolkid):
 	bad_chastisements = Chastisement.objects.filter(schoolkid=schoolkid)
 	bad_chastisements.delete()
 
@@ -49,17 +49,17 @@ if __name__ == "__main__":
 		schoolkid = Schoolkid.objects.get(full_name__contains=args.name)
 
 		if args.action == 1:
-			fix_marks()
+			fix_marks(schoolkid)
 			print('Оценки исправлены')
 
 		if args.action == 2:
-			remove_chastisements()
+			remove_chastisements(schoolkid)
 			print('Замечания удалены')
 
 		if args.action == 3 and args.subject:
 			with open('praises.txt', 'r') as f:
 				praises = f.read().splitlines()
-			create_commendation(schoolkid, args.subject)
+			create_commendation(schoolkid, args.subject, praises)
 			print('Похвала добавлена')
 
 	except Schoolkid.DoesNotExist:
